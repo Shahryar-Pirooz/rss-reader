@@ -1,7 +1,10 @@
 @import "tailwindcss";
 @import "./tokens.css";
 
-@theme inline {
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Georgia", "Charter", serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
   --color-bg-primary: var(--color-bg-primary);
   --color-bg-secondary: var(--color-bg-secondary);
   --color-bg-tertiary: var(--color-bg-tertiary);
@@ -18,47 +21,7 @@
   --color-warning: var(--color-warning);
   --color-error: var(--color-error);
   --color-unread: var(--color-unread-indicator);
-
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
-}
-
-@theme {
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-serif: "Georgia", "Charter", serif;
-  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
-
-  --text-xs: 0.6875rem;
-  --text-xs--line-height: 1.45;
-  --text-sm: 0.8125rem;
-  --text-sm--line-height: 1.45;
-  --text-base: 1rem;
-  --text-base--line-height: 1.55;
-  --text-lg: 1.25rem;
-  --text-lg--line-height: 1.4;
-  --text-xl: 1.5625rem;
-  --text-xl--line-height: 1.3;
-  --text-2xl: 1.9375rem;
-  --text-2xl--line-height: 1.25;
-  --text-3xl: 2.4375rem;
-  --text-3xl--line-height: 1.2;
-
-  --font-weight-regular: var(--font-regular);
-  --font-weight-medium: var(--font-medium);
-  --font-weight-semibold: var(--font-semibold);
-  --font-weight-bold: var(--font-bold);
-
-  --spacing: 0.25rem;
-
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-full: 9999rem;
-
-  --spacing-sidebar: 16.25rem;
-  --container-content: 45rem;
-  --container-feed: 60rem;
-  --container-page: 80rem;
 }
