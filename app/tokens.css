@@ -1,25 +1,72 @@
+/* Light mode (default) */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Backgrounds */
+  --color-bg-primary: oklch(100% 0 0);
+  --color-bg-secondary: oklch(97.5% 0.005 250);
+  --color-bg-tertiary: oklch(94.8% 0.007 250);
+  --color-surface: oklch(100% 0 0);
+  --color-border: oklch(88.5% 0.008 250);
+  --color-border-subtle: oklch(92% 0.006 250);
+
+  /* Text */
+  --color-text-primary: oklch(11% 0.008 250);
+  --color-text-secondary: oklch(40% 0.025 250);
+  --color-text-tertiary: oklch(61% 0.018 250);
+
+  /* Accent */
+  --color-accent: oklch(55% 0.21 263);
+  --color-accent-hover: oklch(45% 0.20 263);
+  --color-accent-subtle: oklch(97% 0.04 263);
+
+  /* Semantic */
+  --color-success: oklch(60% 0.20 153);
+  --color-warning: oklch(65% 0.20 73);
+  --color-error: oklch(50% 0.20 15);
+  --color-unread-indicator: oklch(55% 0.21 263);
+
+  /* Shadows - light */
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px oklch(0% 0 0 / 0.07), 0 2px 4px -2px oklch(0% 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px oklch(0% 0 0 / 0.08), 0 4px 6px -4px oklch(0% 0 0 / 0.04);
+}
+
+/* Dark mode - class-based (alternative to prefers-color-scheme) */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --color-bg-primary: oklch(6% 0.008 250);
+  --color-bg-secondary: oklch(9% 0.008 250);
+  --color-bg-tertiary: oklch(13% 0.008 250);
+  --color-surface: oklch(9% 0.008 250);
+  --color-border: oklch(20% 0.008 250);
+  --color-border-subtle: oklch(13% 0.008 250);
+
+  /* Text */
+  --color-text-primary: oklch(92% 0.006 250);
+  --color-text-secondary: oklch(61% 0.018 250);
+  --color-text-tertiary: oklch(52% 0.015 250);
+
+  /* Accent */
+  --color-accent: oklch(65% 0.20 263);
+  --color-accent-hover: oklch(72% 0.18 263);
+  --color-accent-subtle: oklch(14% 0.03 263);
+
+  /* Semantic */
+  --color-success: oklch(63% 0.18 153);
+  --color-warning: oklch(66% 0.18 73);
+  --color-error: oklch(56% 0.22 15);
+  --color-unread-indicator: oklch(65% 0.20 263);
+
+  /* Shadows - dark */
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px oklch(0% 0 0 / 0.4), 0 2px 4px -2px oklch(0% 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px oklch(0% 0 0 / 0.5), 0 4px 6px -4px oklch(0% 0 0 / 0.3);
+}
+
+/* Typography and spacing (mode-independent) */
 :root {
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8f9fa;
-  --color-bg-tertiary: #f1f3f5;
-  --color-surface: #ffffff;
-  --color-border: #e1e4e8;
-  --color-border-subtle: #eceef0;
-
-  --color-text-primary: #1a1d21;
-  --color-text-secondary: #57606a;
-  --color-text-tertiary: #8b949e;
-
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
-  --color-accent-subtle: #eff6ff;
-
-  --color-success: #16a34a;
-  --color-warning: #ca8a04;
-  --color-error: #dc2626;
-
-  --color-unread-indicator: #2563eb;
-
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Georgia', 'Charter', serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
@@ -61,41 +108,8 @@
   --radius-xl: 1rem;
   --radius-full: 9999rem;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-
   --sidebar-width: 16.25rem;
   --content-max-width: 45rem;
   --feed-max-width: 60rem;
   --page-max-width: 80rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg-primary: #0d1117;
-    --color-bg-secondary: #161b22;
-    --color-bg-tertiary: #21262d;
-    --color-surface: #161b22;
-    --color-border: #30363d;
-    --color-border-subtle: #21262d;
-
-    --color-text-primary: #e6edf3;
-    --color-text-secondary: #8b949e;
-    --color-text-tertiary: #6e7681;
-
-    --color-accent: #58a6ff;
-    --color-accent-hover: #79c0ff;
-    --color-accent-subtle: #1a2332;
-
-    --color-success: #3fb950;
-    --color-warning: #d29922;
-    --color-error: #f85149;
-
-    --color-unread-indicator: #58a6ff;
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
-  }
 }
