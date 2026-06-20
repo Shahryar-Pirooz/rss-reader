@@ -1,11 +1,5 @@
 import { create } from "zustand";
-
-interface AppStore {
-  theme: "light" | "dark";
-  isMenuOpen: boolean;
-  changeTheme: () => void;
-  changeMenu: (open: boolean) => void;
-}
+import { AppStore } from "../types/store";
 
 export const useAppState = create<AppStore>((set) => ({
   theme: "light",
