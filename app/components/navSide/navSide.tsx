@@ -6,8 +6,8 @@ export default function NavSide() {
     <>
       <div className="h-full w-full flex flex-col p-2">
         <div className="header flex flex-row space-x-2 items-center select-none group">
-          <FaRss className="text-accent group-hover:text-accent-hover transition-colors duration-500" />
-          <span className="font-bold text-sm text-text-primary group-hover:text-accent-hover transition-colors duration-500">
+          <FaRss className="text-accent group-hover:text-accent-hover" />
+          <span className="font-bold text-sm text-text-primary group-hover:text-accent-hover">
             Reader
           </span>
         </div>

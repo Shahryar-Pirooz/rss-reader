@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "./tokens.css";
 
+
+* {
+  transition: all 0.5s;
+}
+
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Georgia', 'Charter', serif;

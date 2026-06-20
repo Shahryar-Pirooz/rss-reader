@@ -7,11 +7,15 @@ import { useAppState } from "./store/useAppStore";
 
 export default function Home() {
   const isMenuOpen = useAppState((state) => state.isMenuOpen);
+  const theme = useAppState((state) => state.theme);
 
   return (
-    <div className="container mx-auto p-4 w-full h-screen flex flex-row">
+    <div
+      data-theme={theme}
+      className="container mx-auto p-4 w-full h-screen flex flex-row bg-bg-primary text-text-primary"
+    >
       <div
-        className={`flex flex-row border-r border-border transition-all ${isMenuOpen ? "w-full md:w-2/10" : "w-0"} overflow-hidden`}
+        className={`flex flex-row border-r border-border ${isMenuOpen ? "w-full md:w-2/10" : "w-0"} overflow-hidden`}
       >
         <NavSide />
       </div>
