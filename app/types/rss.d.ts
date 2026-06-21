@@ -1,6 +1,11 @@
+export type Source = {
+  name: string,
+  url: string
+}
+
 export type RssReq = {
   urls: string[];
-};
+}
 
 export type FeedSuccess = {
   url: string
