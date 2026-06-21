@@ -1,4 +1,4 @@
-import { FaRss } from "react-icons/fa6";
+import { FaRss, FaPlus } from "react-icons/fa6";
 import NavItem from "./navItem";
 
 export default function NavSide() {
@@ -13,6 +13,11 @@ export default function NavSide() {
         </div>
         <div className="header">
           <NavItem />
+        </div>
+        <div className="h-full">123</div>
+        <div className="h-fit flex flex-row text-sm text-text-tertiary justify-start items-center space-x-4 cursor-pointer hover:text-text-primary active:scale-95 select-none">
+          <FaPlus />
+          <span>Add Feed</span>
         </div>
       </div>
     </>
