@@ -1,6 +1,7 @@
 import { useAppState } from "@/app/store/useAppStore";
 import { useEffect } from "react";
 import { FaSun, FaAngleLeft } from "react-icons/fa6";
+import ListItem from "./listItem";
 
 export default function ListSide() {
   const isMenuOpen = useAppState((state) => state.isMenuOpen);
@@ -32,7 +33,9 @@ export default function ListSide() {
             {title}
           </span>
         </div>
-        <div>Items</div>
+        <div>
+          <ListItem />
+        </div>
       </div>
     </>
   );
