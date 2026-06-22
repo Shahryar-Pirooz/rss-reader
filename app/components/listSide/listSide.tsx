@@ -6,6 +6,7 @@ export default function ListSide() {
   const isMenuOpen = useAppState((state) => state.isMenuOpen);
   const setIsMenuOpen = useAppState((state) => state.changeMenu);
   const setTheme = useAppState((state) => state.changeTheme);
+  const title = useAppState((state) => state.title);
 
   useEffect(() => {
     const width = window.innerWidth;
@@ -27,6 +28,9 @@ export default function ListSide() {
           <div onClick={() => setTheme()}>
             <FaSun />
           </div>
+          <span className="w-full text-center font-bold text-sm text-text-primary">
+            {title}
+          </span>
         </div>
         <div>Items</div>
       </div>

@@ -126,3 +126,7 @@ export default function NavSide() {
     </>
   );
 }
+
+//TODO: Add validation for URL and Title, and show error message if invalid.
+//TODO: User must be able to edit and delete existing sources.
+//TODO: Add loading state when fetching articles from new source.
