@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { FeedStore, SourceStore } from "../types/store";
+import { Source } from "../types/rss";
 
 export const useSourceState = create<SourceStore>((set) => ({
   sources: [],
-  setSources: (sources) => {
+  setSources: (source: Source) => {
     set((state) => ({
-      sources: [...state.sources, ...sources],
+      sources: [...state.sources, source],
     }));
   },
 }));

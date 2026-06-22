@@ -1,3 +1,4 @@
+import { Data } from "./localStorage";
 import { Source } from "./rss";
 
 export interface AppStore {
@@ -18,5 +19,5 @@ export interface FeedStore {
 
 export interface SourceStore {
     sources : Source[]
-    setSources : (data: Source[])=>void
+    setSources : (data: Source)=>void
 }

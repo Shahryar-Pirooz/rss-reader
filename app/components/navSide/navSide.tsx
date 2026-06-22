@@ -5,6 +5,7 @@ import NavItem from "./navItem";
 import { useSourceState } from "@/app/store/useFeedStore";
 import { Source } from "@/app/types/rss";
 import { useAppState } from "@/app/store/useAppStore";
+import { useEffect } from "react";
 
 export default function NavSide() {
   const isModalOpen = useAppState((state) => state.isAddFeedMenuOpen);
@@ -12,21 +13,29 @@ export default function NavSide() {
   const sources = useSourceState((state) => state.sources);
   const setSources = useSourceState((state) => state.setSources);
 
+  useEffect(() => {
+    const storage = window.localStorage.getItem("sources");
+    if (storage) {
+      const parsed: Source[] = JSON.parse(storage) ?? sources;
+      parsed.map((source) => setSources(source));
+    }
+  }, []);
+
   const handleCancel = () => {
-    // setIsModalOpen(false);
+    setIsModalOpen(false);
   };
   const handleSave = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
-    const title = formData.get("title") as string;
+    const name = formData.get("title") as string;
     const url = formData.get("url") as string;
-    if (title && url) {
-      const newSource: Source = { name: title, url };
+    const exist = sources.some((s) => s.url === url);
+    if (name && url && !exist) {
+      const newSource: Source = { name, url };
       const updatedSources = [...sources, newSource];
-      setSources(updatedSources);
-      console.log("sources", sources);
-      // setLocalSources(updatedSources);
+      setSources(newSource);
+      window.localStorage.setItem("sources", JSON.stringify(updatedSources));
     }
     setIsModalOpen(false);
   };
@@ -41,17 +50,12 @@ export default function NavSide() {
           </span>
         </div>
         <div className="header">
-          <NavItem title="All Articles" icon={<FaInbox />} link="/" />
+          <NavItem title="All Articles" />
         </div>
         <div className="h-full">
           {sources.map((source, index) => {
             return (
-              <NavItem
-                key={index}
-                title={source.name}
-                icon={<FaRss />}
-                link={`/feed/${source.name}`}
-              />
+              <NavItem key={index} title={source.name} link={source.url} />
             );
           })}
         </div>
