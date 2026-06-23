@@ -15,7 +15,7 @@ export const useFeedState = create<FeedStore>((set) => ({
   feeds: [],
   setFeeds: (feeds) => {
     set((state) => ({
-      feeds: [...state.feeds, { ...feeds }],
+      feeds: [...state.feeds, ...feeds],
     }));
   },
 }));

@@ -1,17 +1,36 @@
 "use client";
 
-import { FaRss, FaPlus, FaInbox } from "react-icons/fa6";
+import { FaRss, FaPlus } from "react-icons/fa6";
 import NavItem from "./navItem";
-import { useSourceState } from "@/app/store/useFeedStore";
-import { Source } from "@/app/types/rss";
+import { useFeedState, useSourceState } from "@/app/store/useFeedStore";
+import { Source, FeedSuccess } from "@/app/types/rss";
 import { useAppState } from "@/app/store/useAppStore";
 import { useEffect } from "react";
+
+const fetchFeeds = async (sources: Source[]) => {
+  const urls = sources.map((source) => source.url);
+
+  const res = await fetch("/api/rss", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ urls }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch feeds");
+  }
+
+  return await res.json();
+};
 
 export default function NavSide() {
   const isModalOpen = useAppState((state) => state.isAddFeedMenuOpen);
   const setIsModalOpen = useAppState((state) => state.changeAddFeedMenu);
   const sources = useSourceState((state) => state.sources);
   const setSources = useSourceState((state) => state.setSources);
+  const setFeeds = useFeedState((state) => state.setFeeds);
 
   useEffect(() => {
     const storage = window.localStorage.getItem("sources");
@@ -20,6 +39,12 @@ export default function NavSide() {
       parsed.map((source) => setSources(source));
     }
   }, []);
+  useEffect(() => {
+    (async () => {
+      const data = await fetchFeeds(sources);
+      setFeeds(data.data.feeds.map((item: FeedSuccess) => item.feed));
+    })();
+  }, [sources]);
 
   const handleCancel = () => {
     setIsModalOpen(false);

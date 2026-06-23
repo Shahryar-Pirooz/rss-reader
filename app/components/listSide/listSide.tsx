@@ -2,12 +2,16 @@ import { useAppState } from "@/app/store/useAppStore";
 import { useEffect } from "react";
 import { FaSun, FaAngleLeft } from "react-icons/fa6";
 import ListItem from "./listItem";
+import { useFeedState } from "@/app/store/useFeedStore";
 
 export default function ListSide() {
   const isMenuOpen = useAppState((state) => state.isMenuOpen);
+  const title = useAppState((state) => state.title);
+  // const sources = useSourceState((state) => state.sources);
+  const feeds = useFeedState((state) => state.feeds);
+
   const setIsMenuOpen = useAppState((state) => state.changeMenu);
   const setTheme = useAppState((state) => state.changeTheme);
-  const title = useAppState((state) => state.title);
 
   useEffect(() => {
     const width = window.innerWidth;
@@ -18,6 +22,10 @@ export default function ListSide() {
       setIsMenuOpen(false); // mobile
     }
   }, []);
+
+  useEffect(() => {
+    console.log("feeds", feeds);
+  }, [feeds]);
 
   return (
     <>
@@ -34,7 +42,9 @@ export default function ListSide() {
           </span>
         </div>
         <div>
-          <ListItem />
+          {feeds.map((feed) => (
+            <ListItem key={feed.url} feed={feed} />
+          ))}
         </div>
       </div>
     </>
