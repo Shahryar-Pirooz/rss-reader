@@ -1,5 +1,5 @@
 import { Data } from "./localStorage";
-import { Source } from "./rss";
+import { RSSFeed, Source } from "./rss";
 
 export interface AppStore {
   theme: "light" | "dark";
@@ -13,7 +13,7 @@ export interface AppStore {
 }
 
 export interface FeedStore {
-    feeds : {[key: string]: unknown}[]
+    feeds : RSSFeed[]
     setFeeds : (data: {[key: string]: unknown}[])=>void
 }
 

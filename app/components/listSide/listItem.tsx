@@ -1,7 +1,9 @@
-export default function ListItem() {
+import { RssFeed, RssFeedItem } from "@/app/types/rss";
+
+export default function ListItem({ feed }: { feed: RssFeed }) {
   return (
     <>
-      <div>ListItem</div>
+      <div>{1}</div>
     </>
   );
 }
