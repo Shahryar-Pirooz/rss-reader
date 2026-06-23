@@ -1,12 +1,6 @@
 @import "tailwindcss";
 @import "./tokens.css";
 
-
-* {
-  transition: all 0.5s;
-}
-
-
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Georgia', 'Charter', serif;
@@ -32,6 +26,47 @@
   --shadow-lg: var(--shadow-lg);
 }
 
+* {
+  font-family: var(--font-sans);
+  transition: all 0.3s ease-in-out;
+}
+
+button,
+a,
+input {
+  transition:
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    opacity 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+}
+
 .header {
   @apply border-b border-border w-full h-16 flex items-center px-4;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.prose {
+  line-height: 1.75;
+}
+
+.prose :where(p, ul, ol, blockquote, pre) {
+  margin-block: 1rem;
+}
+
+.prose :where(h1, h2, h3) {
+  margin-block: 1.5rem 0.75rem;
+  font-weight: 700;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
 }

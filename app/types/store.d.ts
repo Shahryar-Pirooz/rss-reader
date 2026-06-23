@@ -1,23 +1,32 @@
-import { Data } from "./localStorage";
-import { RSSFeed, Source } from "./rss";
+import { RssFeed, RssFeedItem, Source } from "./rss";
 
 export interface AppStore {
   theme: "light" | "dark";
   isMenuOpen: boolean;
   isAddFeedMenuOpen: boolean;
-  title:string,
+  selectedSourceUrl: string | null;
+  selectedItem: RssFeedItem | null;
+  title: string;
   changeTheme: () => void;
   changeMenu: (open: boolean) => void;
-  changeAddFeedMenu:(open:boolean) =>  void;
-  changeTitle:(title:string) => void;
+  changeAddFeedMenu: (open: boolean) => void;
+  changeTitle: (title: string) => void;
+  selectSource: (url: string | null, title: string) => void;
+  selectItem: (item: RssFeedItem | null) => void;
 }
 
 export interface FeedStore {
-    feeds : RSSFeed[]
-    setFeeds : (data: {[key: string]: unknown}[])=>void
+  feeds: RssFeed[];
+  isLoading: boolean;
+  error: string | null;
+  setFeeds: (feeds: RssFeed[]) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
 }
 
 export interface SourceStore {
-    sources : Source[]
-    setSources : (data: Source)=>void
+  sources: Source[];
+  setSources: (sources: Source[]) => void;
+  addSource: (source: Source) => void;
+  removeSource: (url: string) => void;
 }

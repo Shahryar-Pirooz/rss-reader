@@ -8,21 +8,32 @@ import { useAppState } from "./store/useAppStore";
 export default function Home() {
   const isMenuOpen = useAppState((state) => state.isMenuOpen);
   const theme = useAppState((state) => state.theme);
+  const setIsMenuOpen = useAppState((state) => state.changeMenu);
 
   return (
     <div
       data-theme={theme}
-      className="container mx-auto p-4 w-full h-screen flex flex-row bg-bg-primary text-text-primary"
+      className="mx-auto flex h-screen w-full max-w-7xl flex-row overflow-hidden bg-bg-primary text-text-primary shadow-lg"
     >
+      {isMenuOpen && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={() => setIsMenuOpen(false)}
+          className="fixed inset-0 z-20 bg-black/40 md:hidden"
+        />
+      )}
       <div
-        className={`flex flex-row border-r border-border ${isMenuOpen ? "w-full md:w-2/10" : "w-0"} overflow-hidden`}
+        className={`fixed inset-y-0 left-0 z-30 flex overflow-hidden border-r border-border bg-bg-primary md:static ${
+          isMenuOpen ? "w-72" : "w-0"
+        }`}
       >
         <NavSide />
       </div>
-      <div className="w-full md:w-3/10 border-r border-border ">
+      <div className="w-full border-r border-border md:w-[38%] lg:w-[34%]">
         <ListSide />
       </div>
-      <div className="w-1/2 hidden md:block ">
+      <div className="hidden flex-1 md:block">
         <Content />
       </div>
     </div>

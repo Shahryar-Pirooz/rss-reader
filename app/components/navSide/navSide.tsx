@@ -1,146 +1,275 @@
 "use client";
 
-import { FaRss, FaPlus } from "react-icons/fa6";
-import NavItem from "./navItem";
-import { useFeedState, useSourceState } from "@/app/store/useFeedStore";
-import { Source, FeedSuccess } from "@/app/types/rss";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { FaPlus, FaRss, FaTrash } from "react-icons/fa6";
 import { useAppState } from "@/app/store/useAppStore";
-import { useEffect } from "react";
+import { useFeedState, useSourceState } from "@/app/store/useFeedStore";
+import { FeedSuccess, Source } from "@/app/types/rss";
+import NavItem from "./navItem";
+
+const STORAGE_KEY = "sources";
 
 const fetchFeeds = async (sources: Source[]) => {
-  const urls = sources.map((source) => source.url);
+  if (sources.length === 0) {
+    return { data: { feeds: [], errors: [] } };
+  }
 
-  const res = await fetch("/api/rss", {
+  const response = await fetch("/api/rss", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ urls }),
+    body: JSON.stringify({ urls: sources.map((source) => source.url) }),
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch feeds");
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Failed to fetch feeds");
   }
 
-  return await res.json();
+  return response.json();
+};
+
+const normalizeUrl = (url: string) => {
+  const parsed = new URL(url.trim());
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new Error("Feed URL must start with http:// or https://");
+  }
+
+  return parsed.toString();
 };
 
 export default function NavSide() {
   const isModalOpen = useAppState((state) => state.isAddFeedMenuOpen);
+  const selectedSourceUrl = useAppState((state) => state.selectedSourceUrl);
   const setIsModalOpen = useAppState((state) => state.changeAddFeedMenu);
+  const selectSource = useAppState((state) => state.selectSource);
   const sources = useSourceState((state) => state.sources);
   const setSources = useSourceState((state) => state.setSources);
+  const addSource = useSourceState((state) => state.addSource);
+  const removeSource = useSourceState((state) => state.removeSource);
   const setFeeds = useFeedState((state) => state.setFeeds);
+  const setLoading = useFeedState((state) => state.setLoading);
+  const setError = useFeedState((state) => state.setError);
+  const [formError, setFormError] = useState<string | null>(null);
+  const hasLoadedStorage = useRef(false);
 
   useEffect(() => {
-    const storage = window.localStorage.getItem("sources");
+    const storage = window.localStorage.getItem(STORAGE_KEY);
     if (storage) {
-      const parsed: Source[] = JSON.parse(storage) ?? sources;
-      parsed.map((source) => setSources(source));
+      try {
+        const parsed = JSON.parse(storage);
+        if (Array.isArray(parsed)) {
+          setSources(
+            parsed.filter(
+              (source): source is Source =>
+                typeof source?.name === "string" &&
+                typeof source?.url === "string",
+            ),
+          );
+        }
+      } catch {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
     }
-  }, []);
+
+    hasLoadedStorage.current = true;
+  }, [setSources]);
+
   useEffect(() => {
+    if (!hasLoadedStorage.current) {
+      return;
+    }
+
+    let isCurrent = true;
+
     (async () => {
-      const data = await fetchFeeds(sources);
-      setFeeds(data.data.feeds.map((item: FeedSuccess) => item.feed));
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchFeeds(sources);
+        if (!isCurrent) {
+          return;
+        }
+
+        const feeds = data.data.feeds.map((item: FeedSuccess) => ({
+          ...item.feed,
+          feedUrl: item.url,
+        }));
+
+        setFeeds(feeds);
+
+        if (data.data.errors.length > 0) {
+          setError(
+            `${data.data.errors.length} feed${
+              data.data.errors.length === 1 ? "" : "s"
+            } could not be loaded.`,
+          );
+        }
+      } catch (error) {
+        if (isCurrent) {
+          setFeeds([]);
+          setError(error instanceof Error ? error.message : "Failed to fetch feeds");
+        }
+      } finally {
+        if (isCurrent) {
+          setLoading(false);
+        }
+      }
     })();
-  }, [sources]);
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [setError, setFeeds, setLoading, sources]);
 
   const handleCancel = () => {
+    setFormError(null);
     setIsModalOpen(false);
   };
-  const handleSave = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    const name = formData.get("title") as string;
-    const url = formData.get("url") as string;
-    const exist = sources.some((s) => s.url === url);
-    if (name && url && !exist) {
-      const newSource: Source = { name, url };
-      const updatedSources = [...sources, newSource];
-      setSources(newSource);
-      window.localStorage.setItem("sources", JSON.stringify(updatedSources));
+
+  const handleSave = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("title") ?? "").trim();
+    const urlValue = String(formData.get("url") ?? "").trim();
+
+    if (!name) {
+      setFormError("Feed title is required.");
+      return;
     }
+
+    let url: string;
+    try {
+      url = normalizeUrl(urlValue);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : "Enter a valid URL.");
+      return;
+    }
+
+    if (sources.some((source) => source.url === url)) {
+      setFormError("This feed is already in your sidebar.");
+      return;
+    }
+
+    const nextSources = [...sources, { name, url }];
+    addSource({ name, url });
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSources));
+    selectSource(url, name);
+    setFormError(null);
     setIsModalOpen(false);
+    event.currentTarget.reset();
+  };
+
+  const handleRemove = (source: Source) => {
+    const nextSources = sources.filter((item) => item.url !== source.url);
+    removeSource(source.url);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSources));
+    if (selectedSourceUrl === source.url) {
+      selectSource(null, "All Articles");
+    }
   };
 
   return (
     <>
-      <div className="h-full w-full flex flex-col p-2">
-        <div className="header flex flex-row space-x-2 items-center select-none group">
+      <div className="flex h-full w-full flex-col p-2">
+        <div className="header flex-row space-x-2 select-none group">
           <FaRss className="text-accent group-hover:text-accent-hover" />
-          <span className="font-bold text-sm text-text-primary group-hover:text-accent-hover">
+          <span className="text-sm font-bold text-text-primary group-hover:text-accent-hover">
             Reader
           </span>
         </div>
-        <div className="header">
-          <NavItem title="All Articles" />
+
+        <div className="py-2">
+          <NavItem
+            title="All Articles"
+            active={selectedSourceUrl === null}
+            onClick={() => selectSource(null, "All Articles")}
+          />
         </div>
-        <div className="h-full">
-          {sources.map((source, index) => {
-            return (
-              <NavItem key={index} title={source.name} link={source.url} />
-            );
-          })}
+
+        <div className="min-h-0 flex-1 space-y-1 overflow-y-auto">
+          {sources.map((source) => (
+            <div key={source.url} className="group flex items-center gap-1">
+              <NavItem
+                title={source.name}
+                link={source.url}
+                active={selectedSourceUrl === source.url}
+                onClick={() => selectSource(source.url, source.name)}
+              />
+              <button
+                type="button"
+                aria-label={`Remove ${source.name}`}
+                onClick={() => handleRemove(source)}
+                className="rounded p-2 text-text-tertiary opacity-0 hover:bg-bg-secondary hover:text-error group-hover:opacity-100"
+              >
+                <FaTrash size={12} />
+              </button>
+            </div>
+          ))}
         </div>
-        <div
+
+        <button
+          type="button"
           onClick={() => setIsModalOpen(true)}
-          className="h-fit flex flex-row text-sm text-text-tertiary justify-start items-center space-x-4 cursor-pointer hover:text-text-primary active:scale-95 select-none"
+          className="flex h-fit flex-row items-center justify-start space-x-4 rounded p-3 text-sm text-text-tertiary hover:text-text-primary active:scale-95"
         >
           <FaPlus />
           <span>Add Feed</span>
-        </div>
+        </button>
       </div>
 
       {isModalOpen && (
         <form onSubmit={handleSave}>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          <button
+            type="button"
+            aria-label="Close add feed dialog"
+            className="fixed inset-0 z-40 bg-black/50"
             onClick={handleCancel}
           />
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-bg-secondary border border-border p-6 rounded-lg flex flex-col space-y-4 z-50">
+          <div className="fixed left-1/2 top-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col space-y-4 rounded-lg border border-border bg-bg-secondary p-6 shadow-lg">
             <h2 className="text-lg font-bold text-text-primary">Add Feed</h2>
             <div>
               <label
                 htmlFor="title"
-                className="block text-sm text-text-primary mb-1"
+                className="mb-1 block text-sm text-text-primary"
               >
-                Title:
+                Title
               </label>
               <input
                 name="title"
-                defaultValue=""
                 type="text"
                 id="title"
-                className="w-full px-3 py-2 bg-bg-primary border border-border rounded text-text-primary"
+                autoFocus
+                className="w-full rounded border border-border bg-bg-primary px-3 py-2 text-text-primary"
               />
             </div>
             <div>
-              <label
-                htmlFor="url"
-                className="block text-sm text-text-primary mb-1"
-              >
-                URL:
+              <label htmlFor="url" className="mb-1 block text-sm text-text-primary">
+                RSS URL
               </label>
               <input
                 name="url"
-                defaultValue=""
-                type="text"
+                type="url"
                 id="url"
-                className="w-full px-3 py-2 bg-bg-primary border border-border rounded text-text-primary"
+                placeholder="https://example.com/feed.xml"
+                className="w-full rounded border border-border bg-bg-primary px-3 py-2 text-text-primary"
               />
             </div>
-            <div className="flex gap-2 justify-end pt-4">
+            {formError && <p className="text-sm text-error">{formError}</p>}
+            <div className="flex justify-end gap-2 pt-4">
               <button
+                type="button"
                 onClick={handleCancel}
-                className="px-4 py-2 text-sm bg-bg-tertiary text-text-primary rounded hover:bg-border"
+                className="rounded bg-bg-tertiary px-4 py-2 text-sm text-text-primary hover:bg-border"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm bg-accent text-white rounded hover:bg-accent-hover"
+                className="rounded bg-accent px-4 py-2 text-sm text-white hover:bg-accent-hover"
               >
                 Save
               </button>
@@ -151,7 +280,3 @@ export default function NavSide() {
     </>
   );
 }
-
-//TODO: Add validation for URL and Title, and show error message if invalid.
-//TODO: User must be able to edit and delete existing sources.
-//TODO: Add loading state when fetching articles from new source.
