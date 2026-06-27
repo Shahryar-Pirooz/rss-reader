@@ -30,11 +30,19 @@ export default function Home() {
       >
         <NavSide />
       </div>
-      <div className="w-full border-r border-border md:w-[38%] lg:w-[34%]">
+      <div className="hidden w-full border-r border-border md:block md:w-[38%] lg:w-[34%]">
         <ListSide />
       </div>
       <div className="hidden flex-1 md:block">
         <Content />
+      </div>
+      <div className="flex flex-col w-full md:hidden">
+        <div className="w-full max-h-2/3">
+          <ListSide />
+        </div>
+        <div className="flex-1 overflow-y-auto border border-border shadow-2xl rounded-lg">
+          <Content />
+        </div>
       </div>
     </div>
   );
