@@ -40,7 +40,7 @@ export default function Home() {
         <div className="w-full max-h-2/3">
           <ListSide />
         </div>
-        <div className="flex-1 overflow-y-auto border border-border shadow-2xl rounded-lg">
+        <div className="flex-1 overflow-y-auto border border-accent shadow-2xl rounded-t-lg">
           <Content />
         </div>
       </div>
